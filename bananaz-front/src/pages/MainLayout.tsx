@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   AppBar,
   Box,
@@ -29,40 +29,52 @@ import {
   createThread,
 } from "../api/images";
 import type { ImageItem, ImageThread } from "../types/api";
+import { useSearchParams } from "react-router-dom";
 
 export const MainLayout: React.FC = () => {
   const { userName, logout } = useAuth();
 
-  const [commentMode, setCommentMode] = React.useState(false);
-  const [images, setImages] = React.useState<ImageItem[]>([]);
-  const [selectedImageId, setSelectedImageId] = React.useState<string | null>(
-    null
-  );
+  const [searchParams, setSearchParams] = useSearchParams();
+  const imageIdFromUrl = searchParams.get("imageId");
 
-  const [threads, setThreads] = React.useState<ImageThread[]>([]);
-  const [isLoadingImages, setIsLoadingImages] = React.useState(false);
-  const [isLoadingThreads, setIsLoadingThreads] = React.useState(false);
-  const [isCreatingImage, setIsCreatingImage] = React.useState(false);
-  const [error, setError] = React.useState<string | null>(null);
+  const [commentMode, setCommentMode] = useState(false);
+  const [images, setImages] = useState<ImageItem[]>([]);
+  const [selectedImageId, setSelectedImageId] = useState<string | null>(null);
+
+  const [threads, setThreads] = useState<ImageThread[]>([]);
+  const [isLoadingImages, setIsLoadingImages] = useState(false);
+  const [isLoadingThreads, setIsLoadingThreads] = useState(false);
+  const [isCreatingImage, setIsCreatingImage] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // --- New state for comment dialog ---
-  const [pinDialogOpen, setPinDialogOpen] = React.useState(false);
-  const [pendingCoords, setPendingCoords] = React.useState<{
+  const [pinDialogOpen, setPinDialogOpen] = useState(false);
+  const [pendingCoords, setPendingCoords] = useState<{
     x: number;
     y: number;
   } | null>(null);
-  const [newComment, setNewComment] = React.useState("");
-  const [commentError, setCommentError] = React.useState<string | null>(null);
-  const [isSavingComment, setIsSavingComment] = React.useState(false);
+  const [newComment, setNewComment] = useState("");
+  const [commentError, setCommentError] = useState<string | null>(null);
+  const [isSavingComment, setIsSavingComment] = useState(false);
 
   // Load images on mount
-  React.useEffect(() => {
+  useEffect(() => {
     const load = async () => {
       try {
         setIsLoadingImages(true);
         const data = await getImages();
         setImages(data);
-        if (data.length > 0) {
+
+        if (data.length === 0) {
+          setSelectedImageId(null);
+          return;
+        }
+
+        // If URL has an imageId and it exists, use that
+        if (imageIdFromUrl && data.some((img) => img.id === imageIdFromUrl)) {
+          setSelectedImageId(imageIdFromUrl);
+        } else {
+          // Fallback: first image
           setSelectedImageId((prev) => prev ?? data[0].id);
         }
       } catch (err: unknown) {
@@ -73,10 +85,10 @@ export const MainLayout: React.FC = () => {
       }
     };
     load();
-  }, []);
+  }, [imageIdFromUrl]); // ⬅️ include imageIdFromUrl as dependency
 
   // Load threads when selected image changes
-  React.useEffect(() => {
+  useEffect(() => {
     const loadThreads = async () => {
       if (!selectedImageId) {
         setThreads([]);
@@ -95,6 +107,27 @@ export const MainLayout: React.FC = () => {
     };
     loadThreads();
   }, [selectedImageId]);
+
+  // Keep ?imageId=... in sync with selectedImageId
+  useEffect(() => {
+    // avoid touching URL before we even have a selection
+    if (!selectedImageId) {
+      const current = searchParams.get("imageId");
+      if (current) {
+        const next = new URLSearchParams(searchParams);
+        next.delete("imageId");
+        setSearchParams(next, { replace: true });
+      }
+      return;
+    }
+
+    const current = searchParams.get("imageId");
+    if (current === selectedImageId) return;
+
+    const next = new URLSearchParams(searchParams);
+    next.set("imageId", selectedImageId);
+    setSearchParams(next, { replace: true });
+  }, [selectedImageId, searchParams, setSearchParams]);
 
   const handleGenerateImage = async () => {
     try {
