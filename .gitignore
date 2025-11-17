@@ -31,6 +31,9 @@ obj/
 .vscode/
 .idea/
 
+# Visual Studio
+.vs/
+
 # Publish outputs
 publish/
 out/
