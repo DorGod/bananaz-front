@@ -156,8 +156,9 @@ export const MainLayout: React.FC = () => {
     logout();
   };
 
-  const selectedImage =
-    images.find((img) => img.id === selectedImageId) ?? null;
+  const selectedImage = Array.isArray(images)
+    ? images.find((img) => img.id === selectedImageId) ?? null
+    : null;
 
   const handleDeleteThread = async (threadId: string) => {
     try {

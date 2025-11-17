@@ -2,8 +2,14 @@ import { api } from "./http";
 import type { ImageItem, ImageThread } from "../types/api";
 
 export async function getImages(): Promise<ImageItem[]> {
-  const { data } = await api.get<ImageItem[]>("/images");
-  return data;
+  const { data } = await api.get("/images");
+
+  if (Array.isArray(data)) {
+    return data as ImageItem[];
+  }
+
+  console.warn("Unexpected /images response:", data);
+  return [];
 }
 
 export async function createImage(): Promise<{ id: string; url: string }> {
@@ -14,19 +20,23 @@ export async function createImage(): Promise<{ id: string; url: string }> {
 export async function getThreadsForImage(
   imageId: string
 ): Promise<ImageThread[]> {
-  const { data } = await api.get<ImageThread[]>(`/images/${imageId}/threads`);
-  return data;
+  const { data } = await api.get(`/images/${imageId}/threads`);
+
+  if (Array.isArray(data)) {
+    return data as ImageThread[];
+  }
+
+  console.warn("Unexpected /images/:id/threads response:", data);
+  return [];
 }
 
 export async function deleteThread(threadId: string): Promise<void> {
   await api.delete(`/threads/${threadId}`);
 }
 
-// 👇 NEW
-
 export type CreateThreadPayload = {
-  x: number; // normalized 0–1
-  y: number; // normalized 0–1
+  x: number;
+  y: number;
   comment: string;
 };
 
