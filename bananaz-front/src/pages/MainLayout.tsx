@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import {
   AppBar,
   Box,
@@ -29,6 +29,7 @@ import {
   deleteThread,
   createThread,
   deleteImage,
+  updateThreadPosition,
 } from "../api/images";
 import type { ImageItem, ImageThread } from "../types/api";
 import { useSearchParams } from "react-router-dom";
@@ -58,6 +59,13 @@ export const MainLayout: React.FC = () => {
   const [newComment, setNewComment] = useState("");
   const [commentError, setCommentError] = useState<string | null>(null);
   const [isSavingComment, setIsSavingComment] = useState(false);
+
+  const imageContainerRef = useRef<HTMLDivElement | null>(null);
+  const [draggingThreadId, setDraggingThreadId] = React.useState<string | null>(
+    null
+  );
+  const dragCoordsRef = React.useRef<{ x: number; y: number } | null>(null);
+  const didDragRef = React.useRef(false);
 
   // Load images on mount
   useEffect(() => {
@@ -131,6 +139,70 @@ export const MainLayout: React.FC = () => {
     setSearchParams(next, { replace: true });
   }, [selectedImageId, searchParams, setSearchParams]);
 
+  const handleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if (!draggingThreadId || !imageContainerRef.current) return;
+
+      const bounds = imageContainerRef.current.getBoundingClientRect();
+      const x = (e.clientX - bounds.left) / bounds.width;
+      const y = (e.clientY - bounds.top) / bounds.height;
+
+      const clampedX = Math.min(1, Math.max(0, x));
+      const clampedY = Math.min(1, Math.max(0, y));
+
+      dragCoordsRef.current = { x: clampedX, y: clampedY };
+
+      // 👇 mark that we actually dragged
+      didDragRef.current = true;
+
+      setThreads((prev) =>
+        prev.map((t) =>
+          t.id === draggingThreadId ? { ...t, x: clampedX, y: clampedY } : t
+        )
+      );
+    },
+    [draggingThreadId]
+  );
+
+  const handleMouseUp = useCallback(async () => {
+    if (!draggingThreadId || !dragCoordsRef.current) {
+      setDraggingThreadId(null);
+      didDragRef.current = false;
+      return;
+    }
+
+    const { x, y } = dragCoordsRef.current;
+    const threadId = draggingThreadId;
+
+    setDraggingThreadId(null);
+    dragCoordsRef.current = null;
+
+    try {
+      await updateThreadPosition(threadId, { x, y });
+    } catch (err) {
+      console.error(err);
+      setError("Failed to update pin position");
+    } finally {
+      // After finishing drag+save, the next click should be normal again
+      didDragRef.current = false;
+    }
+  }, [draggingThreadId]);
+
+  useEffect(() => {
+    if (!draggingThreadId) return;
+
+    const moveListener = (e: MouseEvent) => handleMouseMove(e);
+    const upListener = () => handleMouseUp();
+
+    window.addEventListener("mousemove", moveListener);
+    window.addEventListener("mouseup", upListener);
+
+    return () => {
+      window.removeEventListener("mousemove", moveListener);
+      window.removeEventListener("mouseup", upListener);
+    };
+  }, [draggingThreadId, handleMouseMove, handleMouseUp]);
+
   const handleGenerateImage = async () => {
     try {
       setError(null);
@@ -152,6 +224,23 @@ export const MainLayout: React.FC = () => {
     } finally {
       setIsCreatingImage(false);
     }
+  };
+
+  const handlePinMouseDown = (
+    e: React.MouseEvent<HTMLDivElement>,
+    thread: ImageThread
+  ) => {
+    // Only allow dragging for the creator
+    if (
+      !userName ||
+      thread.createdByName.toLowerCase() !== userName.toLowerCase()
+    ) {
+      return;
+    }
+
+    e.stopPropagation(); // don't trigger image click
+    setDraggingThreadId(thread.id);
+    dragCoordsRef.current = { x: thread.x, y: thread.y };
   };
 
   const handleLogout = () => {
@@ -200,6 +289,12 @@ export const MainLayout: React.FC = () => {
 
   // --- Image click: open dialog with normalized coordinates ---
   const handleImageClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    // If we just finished a drag, ignore this click
+    if (didDragRef.current) {
+      didDragRef.current = false;
+      return;
+    }
+
     if (!commentMode || !selectedImage) return;
 
     const bounds = e.currentTarget.getBoundingClientRect();
@@ -393,6 +488,7 @@ export const MainLayout: React.FC = () => {
               </Typography>
 
               <Box
+                ref={imageContainerRef}
                 sx={{
                   position: "relative",
                   width: "100%",
@@ -431,15 +527,17 @@ export const MainLayout: React.FC = () => {
 
                   if (name) {
                     const parts = name.split(/\s+/);
-
                     if (parts.length >= 2) {
-                      // First letter of first two words
                       initials = (parts[0][0] + parts[1][0]).toUpperCase();
                     } else {
-                      // First two letters of the single word
                       initials = parts[0].slice(0, 2).toUpperCase();
                     }
                   }
+
+                  const isCreator =
+                    userName &&
+                    thread.createdByName.toLowerCase() ===
+                      userName.toLowerCase();
 
                   return (
                     <Tooltip
@@ -487,7 +585,13 @@ export const MainLayout: React.FC = () => {
                           fontSize: 12,
                           fontWeight: 700,
                           boxShadow: 2,
-                          cursor: "pointer",
+                          cursor: isCreator ? "grab" : "default", // 👈
+                        }}
+                        onMouseDown={(e) => {
+                          if (isCreator) {
+                            // start dragging
+                            handlePinMouseDown(e, thread);
+                          }
                         }}
                       >
                         {initials}

@@ -54,3 +54,19 @@ export async function createThread(
   );
   return data;
 }
+
+export type UpdateThreadPositionPayload = {
+  x: number;
+  y: number;
+};
+
+export async function updateThreadPosition(
+  threadId: string,
+  payload: UpdateThreadPositionPayload
+): Promise<ImageThread> {
+  const { data } = await api.patch<ImageThread>(
+    `/threads/${threadId}`,
+    payload
+  );
+  return data;
+}
