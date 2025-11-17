@@ -1,0 +1,6 @@
+@Bananaz_HostAddress = http://localhost:5274
+
+GET {{Bananaz_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

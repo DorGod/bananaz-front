@@ -1,69 +1,112 @@
-# React + TypeScript + Vite
+# Bananaz – Full Stack Image Tagger Assignment
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This repo contains both the **backend (.NET 10 Web API)** and the **frontend (React 19 + Vite)** for the Image Tagger application.
 
-Currently, two official plugins are available:
+## 📁 Project Structure
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+bananaz-back/ → C# .NET backend API
+bananaz-front/ → React frontend application
 
-## Expanding the ESLint configuration
+yaml
+Copy code
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 🚀 Running the Backend (C# / .NET)
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+1. Install .NET 10 SDK
+2. Navigate into the backend folder:
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+cd bananaz-back/ImageTagger.Api
+dotnet run
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+arduino
+Copy code
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+The API will run at:
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+http://localhost:5274
+
+yaml
+Copy code
+
+---
+
+## 🌐 Running the Frontend (React + Vite)
+
+cd bananaz-front
+npm install
+npm run dev
+
+yaml
+Copy code
+
+Frontend runs at:
+
+http://localhost:5173
+
+yaml
+Copy code
+
+---
+
+## 🔐 Authentication
+
+- There is **no session or token**.
+- Authentication uses the HTTP header:
+
+X-User-Name: <username>
+
+yaml
+Copy code
+
+The frontend stores this in `localStorage`.
+
+---
+
+## ✨ Features
+
+- User signup & login
+- Generate random images via backend (Picsum)
+- Comment mode with clickable pins
+- Pins show:
+  - Author initials
+  - Comment text (sanitized via backend HtmlSanitizer)
+- Users may delete **only their own** pins
+- Live update of comments after posting
+
+---
+
+## 🧪 Bonus Features (Optional)
+
+- Deleting images
+- Draggable pins
+- Image deep-linking via URL
+
+---
+
+## 📦 Tech Stack
+
+### Backend
+
+- .NET 10
+- ASP.NET Core Web API
+- Ulid (ID generation)
+- Ganss.Xss (HtmlSanitizer)
+- In-memory data store
+
+### Frontend
+
+- React 19
+- TypeScript
+- Vite
+- MUI
+- Axios
+- React Router
+
+---
+
+## 👨‍💻 Author
+
+Dor — Full Stack Developer  
+Tel Aviv, Israel

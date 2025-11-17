@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
 import {
   AppBar,
@@ -14,6 +13,11 @@ import {
   Typography,
   Tooltip,
   Paper,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
 } from "@mui/material";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 import { useAuth } from "../auth/AuthContext";
@@ -22,6 +26,7 @@ import {
   createImage,
   getThreadsForImage,
   deleteThread,
+  createThread,
 } from "../api/images";
 import type { ImageItem, ImageThread } from "../types/api";
 
@@ -40,6 +45,16 @@ export const MainLayout: React.FC = () => {
   const [isCreatingImage, setIsCreatingImage] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
 
+  // --- New state for comment dialog ---
+  const [pinDialogOpen, setPinDialogOpen] = React.useState(false);
+  const [pendingCoords, setPendingCoords] = React.useState<{
+    x: number;
+    y: number;
+  } | null>(null);
+  const [newComment, setNewComment] = React.useState("");
+  const [commentError, setCommentError] = React.useState<string | null>(null);
+  const [isSavingComment, setIsSavingComment] = React.useState(false);
+
   // Load images on mount
   React.useEffect(() => {
     const load = async () => {
@@ -50,8 +65,8 @@ export const MainLayout: React.FC = () => {
         if (data.length > 0) {
           setSelectedImageId((prev) => prev ?? data[0].id);
         }
-      } catch (err: any) {
-        console.error(err);
+      } catch (err: unknown) {
+        console.error(err instanceof Error ? err : String(err));
         setError("Failed to load images");
       } finally {
         setIsLoadingImages(false);
@@ -71,8 +86,8 @@ export const MainLayout: React.FC = () => {
         setIsLoadingThreads(true);
         const data = await getThreadsForImage(selectedImageId);
         setThreads(data);
-      } catch (err: any) {
-        console.error(err);
+      } catch (err: unknown) {
+        console.error(err instanceof Error ? err : String(err));
         setError("Failed to load comments for this image");
       } finally {
         setIsLoadingThreads(false);
@@ -87,7 +102,6 @@ export const MainLayout: React.FC = () => {
       setIsCreatingImage(true);
       const created = await createImage();
 
-      // Backend returns only { id, url }, so we synthesize creator name on UI if needed
       const newItem: ImageItem = {
         id: created.id,
         url: created.url,
@@ -96,8 +110,9 @@ export const MainLayout: React.FC = () => {
 
       setImages((prev) => [newItem, ...prev]);
       setSelectedImageId(created.id);
-    } catch (err: any) {
-      console.error(err);
+      setThreads([]);
+    } catch (err: unknown) {
+      console.error(err instanceof Error ? err : String(err));
       setError("Failed to create image");
     } finally {
       setIsCreatingImage(false);
@@ -115,20 +130,66 @@ export const MainLayout: React.FC = () => {
     try {
       await deleteThread(threadId);
       setThreads((prev) => prev.filter((t) => t.id !== threadId));
-    } catch (err: any) {
-      console.error(err);
+    } catch (err: unknown) {
+      console.error(err instanceof Error ? err : String(err));
       setError("Failed to delete comment");
     }
   };
 
-  // For now, commentMode will just be wired later into click-to-add-pin.
+  // --- Image click: open dialog with normalized coordinates ---
   const handleImageClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!commentMode || !selectedImage) return;
-    // We'll implement pin creation in the next step
-    console.log("Image clicked (comment mode ON) at", {
-      clientX: e.clientX,
-      clientY: e.clientY,
-    });
+
+    const bounds = e.currentTarget.getBoundingClientRect();
+    const x = (e.clientX - bounds.left) / bounds.width;
+    const y = (e.clientY - bounds.top) / bounds.height;
+
+    const clampedX = Math.min(1, Math.max(0, x));
+    const clampedY = Math.min(1, Math.max(0, y));
+
+    setPendingCoords({ x: clampedX, y: clampedY });
+    setNewComment("");
+    setCommentError(null);
+    setPinDialogOpen(true);
+  };
+
+  const handleClosePinDialog = () => {
+    if (isSavingComment) return;
+    setPinDialogOpen(false);
+    setPendingCoords(null);
+    setNewComment("");
+    setCommentError(null);
+  };
+
+  const handleSaveComment = async () => {
+    if (!selectedImageId || !pendingCoords) return;
+
+    const trimmed = newComment.trim();
+    if (!trimmed) {
+      setCommentError("Comment is required");
+      return;
+    }
+
+    try {
+      setIsSavingComment(true);
+      setCommentError(null);
+
+      const created = await createThread(selectedImageId, {
+        x: pendingCoords.x,
+        y: pendingCoords.y,
+        comment: trimmed,
+      });
+
+      setThreads((prev) => [...prev, created]);
+      setPinDialogOpen(false);
+      setPendingCoords(null);
+      setNewComment("");
+    } catch (err: unknown) {
+      console.error(err instanceof Error ? err : String(err));
+      setCommentError("Failed to save comment");
+    } finally {
+      setIsSavingComment(false);
+    }
   };
 
   return (
@@ -246,9 +307,9 @@ export const MainLayout: React.FC = () => {
                 sx={{
                   position: "relative",
                   width: "100%",
-                  // Maintain some aspect ratio box; image will fit inside
                   paddingTop: "75%", // 4:3 ratio
                   backgroundColor: "#eee",
+                  cursor: commentMode ? "crosshair" : "default",
                 }}
                 onClick={handleImageClick}
               >
@@ -266,7 +327,7 @@ export const MainLayout: React.FC = () => {
                   }}
                 />
 
-                {/* Pins (assuming X & Y are normalized 0–1) */}
+                {/* Loading indicator for threads */}
                 {isLoadingThreads && (
                   <CircularProgress
                     size={24}
@@ -274,6 +335,7 @@ export const MainLayout: React.FC = () => {
                   />
                 )}
 
+                {/* Pins */}
                 {threads.map((thread) => {
                   const initials =
                     (thread.createdByName?.trim().split(/\s+/) ?? [])
@@ -340,6 +402,44 @@ export const MainLayout: React.FC = () => {
           )}
         </Box>
       </Box>
+
+      {/* Comment dialog */}
+      <Dialog
+        open={pinDialogOpen}
+        onClose={handleClosePinDialog}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle>Add comment</DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" color="text.secondary" mb={2}>
+            You&apos;re adding a comment at this location on the image.
+          </Typography>
+          <TextField
+            label="Comment"
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            fullWidth
+            multiline
+            minRows={3}
+            autoFocus
+            error={!!commentError}
+            helperText={commentError ?? " "}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClosePinDialog} disabled={isSavingComment}>
+            Cancel
+          </Button>
+          <Button
+            onClick={handleSaveComment}
+            variant="contained"
+            disabled={isSavingComment}
+          >
+            {isSavingComment ? "Saving..." : "Save"}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

@@ -1,0 +1,109 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\Dor\\Documents\\Interviews\\bananaz\\Bananaz\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{20A31743-CC9B-279D-50FE-2D4721804D76}|Bananaz\\ImageTagger.csproj|c:\\users\\dor\\documents\\interviews\\bananaz\\bananaz\\bananaz\\api\\controllers\\threadscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{20A31743-CC9B-279D-50FE-2D4721804D76}|Bananaz\\ImageTagger.csproj|solutionrelative:bananaz\\api\\controllers\\threadscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{20A31743-CC9B-279D-50FE-2D4721804D76}|Bananaz\\ImageTagger.csproj|c:\\users\\dor\\documents\\interviews\\bananaz\\bananaz\\bananaz\\api\\controllers\\imagescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{20A31743-CC9B-279D-50FE-2D4721804D76}|Bananaz\\ImageTagger.csproj|solutionrelative:bananaz\\api\\controllers\\imagescontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{20A31743-CC9B-279D-50FE-2D4721804D76}|Bananaz\\ImageTagger.csproj|c:\\users\\dor\\documents\\interviews\\bananaz\\bananaz\\bananaz\\api\\controllers\\logincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{20A31743-CC9B-279D-50FE-2D4721804D76}|Bananaz\\ImageTagger.csproj|solutionrelative:bananaz\\api\\controllers\\logincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{20A31743-CC9B-279D-50FE-2D4721804D76}|Bananaz\\ImageTagger.csproj|c:\\users\\dor\\documents\\interviews\\bananaz\\bananaz\\bananaz\\api\\controllers\\userscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{20A31743-CC9B-279D-50FE-2D4721804D76}|Bananaz\\ImageTagger.csproj|solutionrelative:bananaz\\api\\controllers\\userscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{20A31743-CC9B-279D-50FE-2D4721804D76}|Bananaz\\ImageTagger.csproj|c:\\users\\dor\\documents\\interviews\\bananaz\\bananaz\\bananaz\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{20A31743-CC9B-279D-50FE-2D4721804D76}|Bananaz\\ImageTagger.csproj|solutionrelative:bananaz\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "ThreadsController.cs",
+              "DocumentMoniker": "C:\\Users\\Dor\\Documents\\Interviews\\bananaz\\Bananaz\\Bananaz\\Api\\Controllers\\ThreadsController.cs",
+              "RelativeDocumentMoniker": "Bananaz\\Api\\Controllers\\ThreadsController.cs",
+              "ToolTip": "C:\\Users\\Dor\\Documents\\Interviews\\bananaz\\Bananaz\\Bananaz\\Api\\Controllers\\ThreadsController.cs",
+              "RelativeToolTip": "Bananaz\\Api\\Controllers\\ThreadsController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAmwCEAAABcAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-17T10:20:01.653Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "ImagesController.cs",
+              "DocumentMoniker": "C:\\Users\\Dor\\Documents\\Interviews\\bananaz\\Bananaz\\Bananaz\\Api\\Controllers\\ImagesController.cs",
+              "RelativeDocumentMoniker": "Bananaz\\Api\\Controllers\\ImagesController.cs",
+              "ToolTip": "C:\\Users\\Dor\\Documents\\Interviews\\bananaz\\Bananaz\\Bananaz\\Api\\Controllers\\ImagesController.cs",
+              "RelativeToolTip": "Bananaz\\Api\\Controllers\\ImagesController.cs",
+              "ViewState": "AgIAAEMAAAAAAAAAAAAswGoAAABGAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-17T10:19:39.299Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "LoginController.cs",
+              "DocumentMoniker": "C:\\Users\\Dor\\Documents\\Interviews\\bananaz\\Bananaz\\Bananaz\\Api\\Controllers\\LoginController.cs",
+              "RelativeDocumentMoniker": "Bananaz\\Api\\Controllers\\LoginController.cs",
+              "ToolTip": "C:\\Users\\Dor\\Documents\\Interviews\\bananaz\\Bananaz\\Bananaz\\Api\\Controllers\\LoginController.cs",
+              "RelativeToolTip": "Bananaz\\Api\\Controllers\\LoginController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAmwBsAAABRAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-17T10:19:08.907Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "UsersController.cs",
+              "DocumentMoniker": "C:\\Users\\Dor\\Documents\\Interviews\\bananaz\\Bananaz\\Bananaz\\Api\\Controllers\\UsersController.cs",
+              "RelativeDocumentMoniker": "Bananaz\\Api\\Controllers\\UsersController.cs",
+              "ToolTip": "C:\\Users\\Dor\\Documents\\Interviews\\bananaz\\Bananaz\\Bananaz\\Api\\Controllers\\UsersController.cs",
+              "RelativeToolTip": "Bananaz\\Api\\Controllers\\UsersController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACEAAAANAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-17T10:18:43.499Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\Dor\\Documents\\Interviews\\bananaz\\Bananaz\\Bananaz\\Program.cs",
+              "RelativeDocumentMoniker": "Bananaz\\Program.cs",
+              "ToolTip": "C:\\Users\\Dor\\Documents\\Interviews\\bananaz\\Bananaz\\Bananaz\\Program.cs",
+              "RelativeToolTip": "Bananaz\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACAAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-17T10:17:30.512Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

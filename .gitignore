@@ -1,27 +1,47 @@
-# dependencies
-/node_modules
+## === FRONTEND (React + Vite) ===
+node_modules/
+dist/
+*.local
+*.env.local
+.DS_Store
 
-# build artifacts
-/build
-/dist
+# Vite
+.vite/
+.vite-cache/
 
-# environment configs
-.env
-.env.local
-.env.*.local
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
-# TypeScript type definitions
-*.tsbuildinfo
+## === BACKEND (.NET) ===
+# Build folders
+bin/
+obj/
 
-# IDE and editor artifacts
-.idea/
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# VS / Rider
 .vscode/
-*.swp
-*.swo
-*.sublime-workspace
-*.sublime-project
+.idea/
+
+# Publish outputs
+publish/
+out/
+
+# Logs
 *.log
 
-# OS generated files
-.DS_Store
+# Temp
+*.tmp
+*.cache
+*.pid
+
+## === GENERAL ===
 Thumbs.db
