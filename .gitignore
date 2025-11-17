@@ -1,0 +1,27 @@
+# dependencies
+/node_modules
+
+# build artifacts
+/build
+/dist
+
+# environment configs
+.env
+.env.local
+.env.*.local
+
+# TypeScript type definitions
+*.tsbuildinfo
+
+# IDE and editor artifacts
+.idea/
+.vscode/
+*.swp
+*.swo
+*.sublime-workspace
+*.sublime-project
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
