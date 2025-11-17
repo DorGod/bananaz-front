@@ -61,6 +61,37 @@ namespace ImageTagger.Api.Controllers
             return Ok(_state.Images);
         }
 
+        // DELETE /images/{id} - only creator can delete, also deletes its threads
+        [HttpDelete("{id}")]
+        public IActionResult DeleteImage(string id)
+        {
+            var user = GetCurrentUser();
+            if (user is null)
+            {
+                return Unauthorized(new { message = "Invalid or missing X-User-Name header." });
+            }
+
+            var image = _state.Images.FirstOrDefault(i => i.Id == id);
+            if (image is null)
+            {
+                return NotFound(new { message = "Image not found." });
+            }
+
+            if (!image.CreatedByName.Equals(user.Name, StringComparison.OrdinalIgnoreCase))
+            {
+                return Forbid();
+            }
+
+            // Remove all threads belonging to this image
+            _state.Threads.RemoveAll(t => t.ImageId == id);
+
+            // Remove the image itself
+            _state.Images.Remove(image);
+
+            return NoContent();
+        }
+
+
         // POST /images/{id}/threads - add pin/comment
         [HttpPost("{id}/threads")]
         public IActionResult CreateThread(string id, [FromBody] CreateThreadRequest request)

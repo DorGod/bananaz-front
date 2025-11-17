@@ -17,6 +17,10 @@ export async function createImage(): Promise<{ id: string; url: string }> {
   return data;
 }
 
+export async function deleteImage(imageId: string): Promise<void> {
+  await api.delete(`/images/${imageId}`);
+}
+
 export async function getThreadsForImage(
   imageId: string
 ): Promise<ImageThread[]> {

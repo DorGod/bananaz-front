@@ -20,6 +20,7 @@ import {
   TextField,
 } from "@mui/material";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { useAuth } from "../auth/AuthContext";
 import {
   getImages,
@@ -27,6 +28,7 @@ import {
   getThreadsForImage,
   deleteThread,
   createThread,
+  deleteImage,
 } from "../api/images";
 import type { ImageItem, ImageThread } from "../types/api";
 import { useSearchParams } from "react-router-dom";
@@ -159,6 +161,32 @@ export const MainLayout: React.FC = () => {
   const selectedImage = Array.isArray(images)
     ? images.find((img) => img.id === selectedImageId) ?? null
     : null;
+
+  const handleDeleteImage = async (imageId: string) => {
+    try {
+      setError(null);
+      await deleteImage(imageId);
+
+      setImages((prev) => {
+        const next = prev.filter((img) => img.id !== imageId);
+
+        // If we just deleted the selected image, choose another
+        if (selectedImageId === imageId) {
+          if (next.length > 0) {
+            setSelectedImageId(next[0].id);
+          } else {
+            setSelectedImageId(null);
+            setThreads([]);
+          }
+        }
+
+        return next;
+      });
+    } catch (err: unknown) {
+      console.error(err instanceof Error ? err : String(err));
+      setError("Failed to delete image");
+    }
+  };
 
   const handleDeleteThread = async (threadId: string) => {
     try {
@@ -293,18 +321,45 @@ export const MainLayout: React.FC = () => {
           )}
 
           <List dense>
-            {images.map((img) => (
-              <ListItemButton
-                key={img.id}
-                selected={img.id === selectedImageId}
-                onClick={() => setSelectedImageId(img.id)}
-              >
-                <ListItemText
-                  primary={`Image ${img.id.slice(0, 6)}…`}
-                  secondary={`by ${img.createdByName}`}
-                />
-              </ListItemButton>
-            ))}
+            {images.map((img) => {
+              const canDelete =
+                userName &&
+                img.createdByName.toLowerCase() === userName.toLowerCase();
+
+              return (
+                <ListItemButton
+                  key={img.id}
+                  selected={img.id === selectedImageId}
+                  onClick={() => setSelectedImageId(img.id)}
+                >
+                  <Box
+                    display="flex"
+                    alignItems="center"
+                    width="100%"
+                    justifyContent="space-between"
+                    gap={1}
+                  >
+                    <ListItemText
+                      primary={`Image ${img.id.slice(0, 6)}…`}
+                      secondary={`by ${img.createdByName}`}
+                    />
+
+                    {canDelete && (
+                      <IconButton
+                        edge="end"
+                        size="small"
+                        onClick={(e) => {
+                          e.stopPropagation(); // don't also trigger selection click
+                          handleDeleteImage(img.id);
+                        }}
+                      >
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    )}
+                  </Box>
+                </ListItemButton>
+              );
+            })}
           </List>
         </Box>
 
