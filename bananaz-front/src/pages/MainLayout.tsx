@@ -371,11 +371,20 @@ export const MainLayout: React.FC = () => {
 
                 {/* Pins */}
                 {threads.map((thread) => {
-                  const initials =
-                    (thread.createdByName?.trim().split(/\s+/) ?? [])
-                      .map((part) => part[0]?.toUpperCase() ?? "")
-                      .join("")
-                      .slice(0, 2) || "?";
+                  const name = thread.createdByName?.trim() ?? "";
+                  let initials = "?";
+
+                  if (name) {
+                    const parts = name.split(/\s+/);
+
+                    if (parts.length >= 2) {
+                      // First letter of first two words
+                      initials = (parts[0][0] + parts[1][0]).toUpperCase();
+                    } else {
+                      // First two letters of the single word
+                      initials = parts[0].slice(0, 2).toUpperCase();
+                    }
+                  }
 
                   return (
                     <Tooltip
